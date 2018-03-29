@@ -30,8 +30,8 @@
 #include "depends/libTrie/TrieDB.h"
 #include "depends/libTrie/TrieHash.h"
 #include "libConsensus/ConsensusUser.h"
-#include "libCrypto/Sha2.h"
 #include "libCrypto/Schnorr.h"
+#include "libCrypto/Sha2.h"
 #include "libData/AccountData/Account.h"
 #include "libData/AccountData/AccountStore.h"
 #include "libData/AccountData/Transaction.h"
@@ -47,6 +47,14 @@
 
 using namespace std;
 using namespace boost::multiprecision;
+
+void addBalanceToGenesisAccount()
+{
+    Address genesisAddr{DataConversion::HexStrToUint8Vec(
+        "bf1e57cc2f88ef25e7ed9d6504ef1a82eff9c5fe")};
+    boost::multiprecision::uint256_t genensisBalance{100000000000};
+    AccountStore::GetInstance().AddAccount(genesisAddr, genensisBalance, 0);
+}
 
 Node::Node(Mediator& mediator, bool toRetrieveHistory)
     : m_mediator(mediator)
@@ -84,6 +92,7 @@ Node::Node(Mediator& mediator, bool toRetrieveHistory)
 
         m_synchronizer.InitializeGenesisBlocks(m_mediator.m_dsBlockChain,
                                                m_mediator.m_txBlockChain);
+        addBalanceToGenesisAccount();
     }
 
     m_mediator.m_currentEpochNum
